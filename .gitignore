@@ -19,3 +19,4 @@ out/
 .idea/
 *.class
 *.iml
+/bin/

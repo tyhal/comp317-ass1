@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
-mkdir -p test
-cd test
 TESTFILE=$1
-BITS=$2
 OPTS="-server -Xmx8G"
 
+echo "          Unp"
+java $OPTS Unpacker file.unp file.pac
 echo "      Deb"
-java $OPTS Debinarizer encoded.lz78.bin encoded.lz78
+java $OPTS Debinarizer file.deb file.unp
 echo "  Dec"
-java $OPTS Decoder ${BITS:-16} encoded.lz78 $TESTFILE
+java $OPTS Decoder file.dec file.deb
+echo "Complete"
 
 #java $OPTS -verbose:gc -Xprof Encoder 31 encoded $TESTFILE > Encoder.prof.txt
 #java $OPTS -verbose:gc -Xprof Decoder decoded.txt encoded > Decoder.prof.txt

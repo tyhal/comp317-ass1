@@ -10,6 +10,4 @@ echo "  Dec"
 java $OPTS Decoder file.dec file.deb
 echo "Complete"
 
-#java $OPTS -verbose:gc -Xprof Encoder 31 encoded $TESTFILE > Encoder.prof.txt
-#java $OPTS -verbose:gc -Xprof Decoder decoded.txt encoded > Decoder.prof.txt
 

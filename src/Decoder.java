@@ -33,7 +33,7 @@ public class Decoder {
 	
 	public static void main( String[] args ) throws IOException {
     	BufferedReader br = new BufferedReader( new InputStreamReader( System.in, "UTF-8" ) );
-    	bw = new BufferedWriter( new FileWriter( args[ 0 ] ) );
+    	bw = new BufferedWriter( new OutputStreamWriter( System.out, "UTF-8" ) );
     	Decoder decoder = new Decoder();
     	try {
     		String line;

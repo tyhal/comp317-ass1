@@ -63,7 +63,7 @@ public class Encoder {
 
     public static void main( String[] args ) throws IOException {
     	BufferedReader br = new BufferedReader( new InputStreamReader( System.in, "UTF-8" ) );
-    	bw = new BufferedWriter( new FileWriter( args[ 1 ] ) );
+    	bw = new BufferedWriter( new OutputStreamWriter( System.out, "UTF-8" ) );
     	Encoder encoder = new Encoder( Integer.parseInt( args[ 0 ] ) );
     	try {
     		int next_c, c = br.read();

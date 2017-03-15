@@ -1,81 +1,39 @@
-import java.util.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.util.TreeMap;
 
 public class Encoder {
-	private static BufferedWriter bw;
-	private Trie head, pointer;
-	private long phrase_count;
-	private long dict_limit;
-	private final long reset_phrase_num = 0; // Ensured to work with any dictionary limit
-
     private class Trie {
-		private TreeMap< Character, Trie > phrases;
-		private long phrase_num;
-
-		public Trie( long key ) {
-			phrase_num = key;
-			phrases = new TreeMap< Character, Trie >();
-		}
-
-		public boolean phraseMatch( char c ) {
-			if( phrases.containsKey( c ) ) {
-				pointer = phrases.get( c ); // Traverse phrase
-				return true;
-			}
-			return false; // Wasn't an existing phrase
-		}
-
-		public long insert( char c ) {
-			pointer.phrases.put( c, new Trie( ++phrase_count ) ); // Add to dictionary and increment phrase count
-			return pointer.phrase_num;
-		}
-	}
-
-	public Encoder( int max_num_bits ) {
-		dict_limit = 1 << max_num_bits; // 2 ^ max_num_bits
-		resetDictionary();
-	}
-
-	private void resetDictionary() {
-		phrase_count = 1; // Starts at 1 since 0 is taken by RESET phrase number
-		head = new Trie( phrase_count );
-		pointer = head;
-	}
-
-	private String format( char c ) {
-		return Integer.toHexString( (int)c );
-	}
-
-	public void encode( char c, boolean last_symbol ) throws IOException {
-		boolean in_dict;
-		if( phrase_count == dict_limit ) { // Dictionary full
-			// Write RESET phrase number followed by mismatch symbol
-			bw.write( Long.toString( reset_phrase_num ) + "," + format( c ) + "\n" );
-			resetDictionary();
-		} else if( !( in_dict = pointer.phraseMatch( c ) ) || last_symbol ) {
-			// If the last symbol phrase is already in dictionary then there is no mismatch so don't output any symbol value
-			String mismatch_char = ( last_symbol && in_dict ) ? "\n" : "," + format( c ) + "\n";
-			long phrase_num = head.insert( c );
-			bw.write( Long.toString( phrase_num ) + mismatch_char ); // Write < phrase number, mismatched byte in hex >
-			pointer = head; // Go back to start to build up phrase again
-		}
-	}
-
+        public final long phrase_num = ++phrase_count; // Sets phrase_num and increments phrase count on construction
+        public TreeMap< Character, Trie > trie = new TreeMap< Character, Trie >();
+    };
+    private long phrase_count = 0; // 0 is RESET phrase number
+    private Trie dict = new Trie(), dict_curr = dict;
     public static void main( String[] args ) throws IOException {
-    	BufferedReader br = new BufferedReader( new InputStreamReader( System.in, "UTF-8" ) );
-    	bw = new BufferedWriter( new OutputStreamWriter( System.out, "UTF-8" ) );
-    	Encoder encoder = new Encoder( Integer.parseInt( args[ 0 ] ) );
-    	try {
-    		int next_c, c = br.read();
-    		for( boolean last = ( c == -1 ); !last; c = next_c ) {
-    			last = ( ( next_c = br.read() ) == -1 );
-    			encoder.encode( (char)c, last );
-    		}
-		} catch( IOException e ) {
-			e.printStackTrace();
-		} finally {
-    		br.close();
-    		bw.close();
-    	}
+        final BufferedReader br = new BufferedReader( new InputStreamReader( System.in, "UTF-8" ) );
+        final int dict_limit = 1 << Integer.parseInt( args[ 0 ] ); // 2 ^ max_num_bits
+        Encoder encoder = new Encoder(); // Create encoder with empty dictionary
+        for( int next_c, c = br.read(); c != -1; c = next_c ) {
+            final boolean last = ( ( next_c = br.read() ) == -1 );
+            if( encoder.phrase_count == dict_limit )  { // Dictionary full
+                System.out.println( ( encoder.phrase_count = 0 /* RESET phrase # */ ) + "," + Integer.toHexString( c ) );
+                encoder = new Encoder(); // Reset dictionary
+            } else {
+                if( encoder.dict_curr.trie.containsKey( (char)c ) ) { // Phrase in dictionary
+                    encoder.dict_curr = encoder.dict_curr.trie.get( (char)c ); // Traverse Trie
+                    if( last ) {
+                        System.out.println( encoder.dict_curr.phrase_num );
+                    }
+                } else {
+                    encoder.dict_curr.trie.put( (char)c, encoder.new Trie() ); // Add to dictionary
+                    System.out.println( encoder.dict_curr.phrase_num + "," + Integer.toHexString( c ) );
+                    encoder.dict_curr = encoder.dict; // Reset head back to start of Trie
+                }
+            }
+        }
+        br.close();
     }
 }

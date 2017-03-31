@@ -1,6 +1,8 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Map;
@@ -8,6 +10,7 @@ import java.util.Map;
 public class Decoder
 {
     private ArrayList< Map.Entry< Long, Character > > dict = new ArrayList< Map.Entry< Long, Character > >();
+    private static BufferedWriter bw;
 
     public void decode( long dict_idx, char prefix, boolean has_mismatch ) throws IOException
     {
@@ -18,13 +21,15 @@ public class Decoder
         }
         if( has_mismatch )
         {
-            System.out.print( prefix );
+//             System.out.print( prefix );
+            bw.write( prefix );
         }
     }
 
     public static void main( String[] args ) throws IOException
     {
         final BufferedReader br = new BufferedReader( new InputStreamReader( System.in, "UTF-8" ) );
+        bw = new BufferedWriter( new OutputStreamWriter( System.out, "UTF-8" ) );
     	Decoder decoder = new Decoder();
 
         for( String line = br.readLine(); line != null; line = br.readLine() )
@@ -45,5 +50,6 @@ public class Decoder
             decoder.decode( phrase_num - 2, prefix, tokens.length == 2 );
         }
         br.close();
+        bw.close();
     }
 }

@@ -1,10 +1,13 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 
 public class Binarizer
 {
     private long phrase_count = 0;
+    private static BufferedWriter bw;
     
     private String toBinary( long value, int num_bits )
     {
@@ -12,7 +15,7 @@ public class Binarizer
         return String.format( expression, Long.toBinaryString( value ) ).replace( " ", "0" );
     }
 
-    public void binarize( long phrase_num, char prefix, boolean has_mismatch )
+    public void binarize( long phrase_num, char prefix, boolean has_mismatch ) throws IOException
     {
 //         System.out.println( "> " + phrase_num + ", " + prefix + " | phrase_count: " + phrase_count );
      
@@ -20,12 +23,14 @@ public class Binarizer
         {
             // Calculate minimum number of bits needed to represent number
             int num_bits = Long.SIZE - Long.numberOfLeadingZeros( phrase_count );
-            System.out.print( toBinary( phrase_num, num_bits ) );
+//             System.out.print( toBinary( phrase_num, num_bits ) );
+            bw.write( toBinary( phrase_num, num_bits ) );
         }
         
         if( has_mismatch )
         {
-            System.out.print( toBinary( prefix, 8 ) );
+//             System.out.print( toBinary( prefix, 8 ) );
+            bw.write( toBinary( prefix, 8 ) );
         }
 
         phrase_count = phrase_num == 0 ? 0 : phrase_count + 1; // 0 is the RESET phrase number
@@ -34,6 +39,7 @@ public class Binarizer
     public static void main( String[] args ) throws IOException
     {
         final BufferedReader br = new BufferedReader( new InputStreamReader( System.in, "UTF-8" ) );
+        bw = new BufferedWriter( new OutputStreamWriter( System.out, "UTF-8" ) );
         Binarizer binarizer = new Binarizer();
 
         for( String line = br.readLine(); line != null; line = br.readLine() )
@@ -46,5 +52,6 @@ public class Binarizer
         }
 
         br.close();
+        bw.close();
     }
 }

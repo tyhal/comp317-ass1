@@ -1,6 +1,8 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 
 public class Debinarizer
 {
@@ -9,6 +11,7 @@ public class Debinarizer
     private long bit_string = 0;
     private long bit_count = 0;
     private boolean decode_prefix = false;
+    private static BufferedWriter bw;
     
     private String toBinary( long value, int num_bits )
     {
@@ -16,11 +19,12 @@ public class Debinarizer
         return String.format( expression, Long.toBinaryString( value ) ).replace( " ", "0" );
     }
     
-    public void debinarize( int bit, boolean last )
+    public void debinarize( int bit, boolean last ) throws IOException
     {   
         if( !decode_prefix && phrase_count == 0 ) // Cannot decode number of 0 bits so must add optimized out phrase #
         {
-            System.out.print( 1 + "," );
+//             System.out.print( 1 + "," );
+            bw.write( 1 + "," );
             decode_prefix = true;
         }
         
@@ -35,14 +39,16 @@ public class Debinarizer
         {
             if( decode_prefix )
             {
-                System.out.println( Integer.toHexString( (int)bit_string ) );
+//                 System.out.println( Integer.toHexString( (int)bit_string ) );
+                bw.write( Integer.toHexString( (int)bit_string ) + "\n" );
                 phrase_count++; // Phrase decoded
             }
             else
             {
                 // -1 so that we add optimized out phrase number after the first phrase has been decoded since the reset
                 phrase_count = bit_string == 0 ? -1 : phrase_count;
-                System.out.print( bit_string + ( last ? "" : "," ) );
+//                 System.out.print( bit_string + ( last ? "" : "," ) );
+                bw.write( bit_string + ( last ? "" : "," ) );
             }
             
             decode_prefix = !decode_prefix; // Alternate
@@ -56,6 +62,7 @@ public class Debinarizer
     public static void main( String[] args ) throws IOException
     {
         final BufferedReader br = new BufferedReader( new InputStreamReader( System.in, "UTF-8" ) );
+        bw = new BufferedWriter( new OutputStreamWriter( System.out, "UTF-8" ) );
         Debinarizer debinarizer = new Debinarizer();
         
         for( int next_c, c = br.read(); c != -1; c = next_c )
@@ -65,5 +72,6 @@ public class Debinarizer
         }
 
         br.close();
+        bw.close();
     }
 }

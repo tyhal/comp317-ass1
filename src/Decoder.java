@@ -21,7 +21,6 @@ public class Decoder
         }
         if( has_mismatch )
         {
-//             System.out.print( prefix );
             bw.write( prefix );
         }
     }

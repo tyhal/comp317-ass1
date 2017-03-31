@@ -29,7 +29,6 @@ public class Encoder
 
             if( encoder.phrase_count == dict_limit ) // Dictionary full
             {
-//                 System.out.println( ( encoder.phrase_count = 0 /* RESET phrase # */ ) + "," + Integer.toHexString( c ) );
                 bw.write( ( encoder.phrase_count = 0 /* RESET phrase # */ ) + "," + Integer.toHexString( c ) + "\n" );
                 encoder = new Encoder(); // Reset dictionary
             }
@@ -38,14 +37,12 @@ public class Encoder
                 encoder.dict_curr = encoder.dict_curr.trie.get( (char)c ); // Traverse Trie
                 if( last )
                 {
-//                     System.out.println( encoder.dict_curr.phrase_num );
                     bw.write( encoder.dict_curr.phrase_num + "\n" );
                 }
             }
             else
             {
                 encoder.dict_curr.trie.put( (char)c, encoder.new Trie() ); // Add to dictionary
-//                 System.out.println( encoder.dict_curr.phrase_num + "," + Integer.toHexString( c ) );
                 bw.write( encoder.dict_curr.phrase_num + "," + Integer.toHexString( c ) + "\n" );
                 encoder.dict_curr = encoder.dict; // Reset head back to start of Trie
             }

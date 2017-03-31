@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+TESTFILE=$1
+BITS=$2
+OPTS="-server -Xmx4G"
+
+cat $TESTFILE | \
+java ${OPTS} Encoder ${BITS:-16} | \
+java ${OPTS} Binarizer | \
+java ${OPTS} Packer > $TESTFILE.lz78
+
+

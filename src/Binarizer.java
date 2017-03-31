@@ -19,16 +19,44 @@ public class Binarizer {
             long bit = (value >> i) & 1;
             bw.write((bit == 1) ? "1" : "0");
         }
-        bw.write("\n");
+//        bw.write("\n");
     }
 
+//    public void binarize(long phrase_num, char prefix, boolean has_mismatch) throws IOException {
+//        
+//        phrase_count = phrase_num == 0 ? phrase_count : phrase_count + 1; // 0 is the RESET phrase number
+//
+////        System.out.println(phrase_num + "," + prefix + " | " + phrase_count);
+//        // First symbol doesn't need phrase num encoded
+//        if (phrase_count != 0 && !is_first)
+//        {
+//            int num_bits = Long.SIZE - Long.numberOfLeadingZeros(phrase_count);
+//            writeInBinary(phrase_num, num_bits);
+//        }
+//
+//        if (has_mismatch)
+//        {
+//            writeInBinary(prefix, 8);
+//        }
+//        
+//        is_first = false;
+//        
+//        if( phrase_num == 0 )
+//        {
+//            phrase_count = 0;
+//        }
+//        
+////        System.out.println(phrase_num==0);
+//
+////        phrase_count = phrase_num == 0 ? 0 : phrase_count + 1; // 0 is the RESET phrase number
+//    }
+    
     public void binarize(long phrase_num, char prefix, boolean has_mismatch) throws IOException {
         
-        phrase_count = phrase_num == 0 ? phrase_count : phrase_count + 1; // 0 is the RESET phrase number
-
+        phrase_count++;
 //        System.out.println(phrase_num + "," + prefix + " | " + phrase_count);
         // First symbol doesn't need phrase num encoded
-        if (phrase_count != 0 && !is_first)
+        if (!is_first)
         {
             int num_bits = Long.SIZE - Long.numberOfLeadingZeros(phrase_count);
             writeInBinary(phrase_num, num_bits);
@@ -40,11 +68,6 @@ public class Binarizer {
         }
         
         is_first = false;
-        
-        if( phrase_num == 0 )
-        {
-            phrase_count = 0;
-        }
         
 //        System.out.println(phrase_num==0);
 

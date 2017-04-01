@@ -5,7 +5,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
 public class Binarizer {
-    private long phrase_count = 0;
+    private int phrase_num_bits = 1;
+    private long phrase_count = 1;
     private boolean is_first = true;
     private static BufferedWriter bw;
 
@@ -13,66 +14,57 @@ public class Binarizer {
     {
         assert (num_bits != 0 && num_bits <= 8);
 
-//        System.out.println("write binary number bits: " + num_bits + " | value: " + value);
         for (int i = num_bits - 1; i >= 0; i--)
         {
             long bit = (value >> i) & 1;
             bw.write((bit == 1) ? "1" : "0");
         }
-//        bw.write("\n");
+    //    bw.write("\n");
     }
 
-//    public void binarize(long phrase_num, char prefix, boolean has_mismatch) throws IOException {
-//        
-//        phrase_count = phrase_num == 0 ? phrase_count : phrase_count + 1; // 0 is the RESET phrase number
-//
-////        System.out.println(phrase_num + "," + prefix + " | " + phrase_count);
-//        // First symbol doesn't need phrase num encoded
-//        if (phrase_count != 0 && !is_first)
-//        {
-//            int num_bits = Long.SIZE - Long.numberOfLeadingZeros(phrase_count);
-//            writeInBinary(phrase_num, num_bits);
-//        }
-//
-//        if (has_mismatch)
-//        {
-//            writeInBinary(prefix, 8);
-//        }
-//        
-//        is_first = false;
-//        
-//        if( phrase_num == 0 )
-//        {
-//            phrase_count = 0;
-//        }
-//        
-////        System.out.println(phrase_num==0);
-//
-////        phrase_count = phrase_num == 0 ? 0 : phrase_count + 1; // 0 is the RESET phrase number
-//    }
-    
+    private void resetPhraseCount() {
+        this.phrase_count = (long) Math.pow(2, this.phrase_num_bits) - 1;
+    }
+
     public void binarize(long phrase_num, char prefix, boolean has_mismatch) throws IOException {
-        
-        phrase_count++;
+
+//         System.out.println(phrase_num_bits + " ");
+        //phrase_count ==
+        //phrase_count = phrase_num == 0 ? phrase_count : phrase_count + 1; // 0 is the RESET phrase number
+
+        //System.out.println(phrase_count);
+
 //        System.out.println(phrase_num + "," + prefix + " | " + phrase_count);
         // First symbol doesn't need phrase num encoded
         if (!is_first)
         {
-            int num_bits = Long.SIZE - Long.numberOfLeadingZeros(phrase_count);
+           int num_bits = Long.SIZE - Long.numberOfLeadingZeros(phrase_count);
             writeInBinary(phrase_num, num_bits);
         }
 
         if (has_mismatch)
         {
             writeInBinary(prefix, 8);
+            phrase_count++;
+            // if (--phrase_count == 0) {
+            //     phrase_num_bits++;
+            //     resetPhraseCount();
+            // }
         }
-        
+
         is_first = false;
-        
+
+        if( phrase_num == 0 )
+        {
+    //        phrase_num_bits = 1;
+//            resetPhraseCount();
+        }
+
 //        System.out.println(phrase_num==0);
 
 //        phrase_count = phrase_num == 0 ? 0 : phrase_count + 1; // 0 is the RESET phrase number
     }
+
 
     public static void main(String[] args) throws IOException
     {

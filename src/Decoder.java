@@ -9,9 +9,20 @@ import java.util.Map;
 
 public class Decoder
 {
+    // Dictionary is '2' Arrays <Phrase number, Mismatch character>
     private ArrayList< Map.Entry< Long, Character > > dict = new ArrayList< Map.Entry< Long, Character > >();
     private static BufferedWriter bw;
 
+    /**
+     * Decodes with recursion to build up the original phrase. 
+     * 
+     * @param dict_idx      The index into the dictionary.
+     * @param prefix        The mismatch byte.
+     * @param has_mismatch  This is only used for the last pair to indicate whether there is a mismatch byte
+     *                      as there are cases where the symbol exists in the dictionary and there is no
+     *                      mismatch.
+     * @throws IOException
+     */
     public void decode( long dict_idx, char prefix, boolean has_mismatch ) throws IOException
     {
         if( dict_idx >= 0 ) // Phrase exists in dictionary
@@ -31,6 +42,7 @@ public class Decoder
         bw = new BufferedWriter( new OutputStreamWriter( System.out, "UTF-8" ) );
     	Decoder decoder = new Decoder();
 
+    	// Read until end of file (no more pairs)
         for( String line = br.readLine(); line != null; line = br.readLine() )
         {
             String[] tokens = line.split( ",", 2 ); // Limit to 2 for case where value is ','

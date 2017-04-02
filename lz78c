@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+
+if (( $# < 1 )); then
+    echo "Usage : lz78c <FILE> <BITS>"
+    exit 1
+fi
+
 TESTFILE=$1
 BITS=$2
 OPTS="-server -Xmx4G"

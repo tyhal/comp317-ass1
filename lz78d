@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+
+if [ "$#" -ne 1 ]; then
+    echo "Usage : lz78d <FILE>"
+    exit 1
+fi
+
 TESTFILE=$1
 OPTS="-server -Xmx4G"
 

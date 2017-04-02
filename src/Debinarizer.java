@@ -13,33 +13,41 @@ public class Debinarizer
     private boolean decode_prefix = false;
     private static BufferedWriter bw;
 
+    /***
+     * Builds up phrases or phrase numbers given bits.
+     * 
+     * @param bit           The bit to build a phrase or phrase number with.
+     * @throws IOException
+     */
     public void debinarize( int bit ) throws IOException
     {
+        // If we want symbol then we need 8 bits, otherwise be need log2(phrase_count) bits
         bits_to_decode = decode_prefix ? 8 : Long.SIZE - Long.numberOfLeadingZeros( phrase_count );
 
+        // build up phrase_number/phrase
         bit_string ^= bit;
         bit_count++;
 
-        if( bit_count == bits_to_decode )
+        if( bit_count == bits_to_decode ) // Phrase/Phrase number built!
         {
             if( decode_prefix )
             {
                 bw.write( "," + Integer.toHexString( (int)bit_string ) + "\n" );
-                phrase_count++;
+                phrase_count++; // Symbol created so increment phrase count
             }
             else
             {
                 bw.write( Long.toString( bit_string ) );
 
-                if( bit_string == 0 )
+                if( bit_string == 0 ) // 0 is the RESET phrase number
                 {
-                    phrase_count = 0;
+                    phrase_count = 0; // Reset phrase count such that we read in the correct number of bits.
                 }
             }
 
             decode_prefix = !decode_prefix; // Alternate
             bit_count = 0;
-            bit_string = 0;
+            bit_string = 0; // Reset bit string
         }
         bit_string <<= 1;
     }

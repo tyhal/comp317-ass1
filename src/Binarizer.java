@@ -11,6 +11,14 @@ public class Binarizer
     private boolean is_first = true;
     private static BufferedWriter bw;
 
+    /**
+     * 
+     * Converts and writes binary number to a binary string of a specified length.
+     * 
+     * @param value         The binary number to convert & write to stdout
+     * @param num_bits      The length of the binary string.
+     * @throws IOException
+     */
     private void writeInBinary( long value, int num_bits ) throws IOException
     {
         bits_written += num_bits;
@@ -22,6 +30,12 @@ public class Binarizer
         }
     }
 
+    /**
+     * Pads necessary bits to the end of the file such that it is a multiple of 8
+     * bits so that it can be bit packed.
+     * 
+     * @throws IOException
+     */
     public void padEOF() throws IOException
     {
         int padding = 16 - ( int )( bits_written % 8 );
@@ -29,6 +43,17 @@ public class Binarizer
         writeInBinary( value, padding - 8 );
     }
 
+    /**
+     * Converts the phrase number and prefix to binary in the most efficient form.
+     * Uses 8 bits per symbol/prefix and log2(current_phrase_count) per phrase number.
+     * 
+     * @param phrase_num    The phrase number in the pair to binarize
+     * @param prefix        The mismatch character in the pair to binarize.
+     * @param has_mismatch  This is only used for the last pair to indicate whether there is a mismatch byte
+     *                      as there are cases where the symbol exists in the dictionary and there is no
+     *                      mismatch.
+     * @throws IOException
+     */
     public void binarize( long phrase_num, char prefix, boolean has_mismatch ) throws IOException
     {
         int num_bits = Long.SIZE - Long.numberOfLeadingZeros( phrase_count );

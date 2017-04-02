@@ -6,102 +6,43 @@ import java.io.OutputStreamWriter;
 
 public class Debinarizer
 {
-    // private int phrase_num_bits = 1;
     private long phrase_count = 1;
     private long bits_to_decode = 0;
     private long bit_string = 0;
     private long bit_count = 0;
-    private boolean decode_prefix = true;
+    private boolean decode_prefix = false;
     private static BufferedWriter bw;
 
-    private String toBinary( long value, int num_bits )
+    public void debinarize( int bit ) throws IOException
     {
-        String expression = "%" + Integer.toString( num_bits ) + "s";
-        return String.format( expression, Long.toBinaryString( value ) ).replace( " ", "0" );
+        bits_to_decode = decode_prefix ? 8 : Long.SIZE - Long.numberOfLeadingZeros( phrase_count );
+
+        bit_string ^= bit;
+        bit_count++;
+
+        if( bit_count == bits_to_decode )
+        {
+            if( decode_prefix )
+            {
+                bw.write( "," + Integer.toHexString( (int)bit_string ) + "\n" );
+                phrase_count++;
+            }
+            else
+            {
+                bw.write( Long.toString( bit_string ) );
+
+                if( bit_string == 0 )
+                {
+                    phrase_count = 0;
+                }
+            }
+
+            decode_prefix = !decode_prefix; // Alternate
+            bit_count = 0;
+            bit_string = 0;
+        }
+        bit_string <<= 1;
     }
-
-    private void resetPhraseCount() {
-        // this.phrase_count = (long) Math.pow(2, this.phrase_num_bits) - 1;
-    //    System.out.println("phrase_count: " + phrase_count);
-    }
-
-//     public void debinarize( int bit, boolean last ) throws IOException
-//     {
-//         if( !decode_prefix && phrase_count == 0 ) // Cannot decode number of 0 bits so must add optimized out phrase #
-//         {
-//             bw.write( 1 + "," );
-//             decode_prefix = true;
-//         }
-//
-//         bits_to_decode = decode_prefix ? 8 : Long.SIZE - Long.numberOfLeadingZeros( phrase_count );
-//
-//         bit_string ^= bit;
-//         bit_count++;
-//
-// //         System.out.println( bit + ", " + bits_to_decode + ", " + toBinary( bit_string, 8 ) + " | phrase_count: " + phrase_count);
-//
-//         if( bit_count == bits_to_decode )
-//         {
-//             if( decode_prefix )
-//             {
-//                 bw.write( Integer.toHexString( (int)bit_string ) + "\n" );
-//                 phrase_count++; // Phrase decoded
-//             }
-//             else
-//             {
-//                 // -1 so that we add optimized out phrase number after the first phrase has been decoded since the reset
-//                 phrase_count = bit_string == 0 ? -1 : phrase_count;
-//                 bw.write( bit_string + ( last ? "" : "," ) );
-//             }
-//
-//             decode_prefix = !decode_prefix; // Alternate
-//             bit_count = 0;
-//             bit_string = 0;
-//         }
-//
-//         bit_string <<= 1;
-//     }
-
-    public void debinarize(int bit, boolean last) throws IOException {
-
-         bits_to_decode = decode_prefix ? 8 : Long.SIZE - Long.numberOfLeadingZeros(phrase_count);
-
-         bit_string ^= bit;
-         bit_count++;
-
- //         System.out.println( bit + ", " + bits_to_decode + ", " + toBinary( bit_string, 8 ) + " | phrase_count: " + phrase_count);
-
-         if( bit_count == bits_to_decode )
-         {
-             if( decode_prefix )
-             {
-                 bw.write( Integer.toHexString( (int)bit_string ) + "\n" );
-                 phrase_count++;
-                //  if (--phrase_count == 0) {
-                    // phrase_num_bits++;
-                    // resetPhraseCount();
-//                    System.out.println("increment: " + phrase_num_bits);
-                // }
-             }
-             else
-             {
-                // bw.write("Bits to decode: " + Long.toString(bits_to_decode) + "\n");
-                 bw.write( bit_string + ( last ? "" : "," ) );
-
-                 if (bit_string == 0) {
-                //    phrase_num_bits = 1;
-                //    resetPhraseCount();
-                 }
-             }
-
-             decode_prefix = !decode_prefix; // Alternate
-             bit_count = 0;
-             bit_string = 0;
-         }
-
-         bit_string <<= 1;
-     }
-
 
     public static void main( String[] args ) throws IOException
     {
@@ -109,11 +50,9 @@ public class Debinarizer
         bw = new BufferedWriter( new OutputStreamWriter( System.out, "UTF-8" ) );
         Debinarizer debinarizer = new Debinarizer();
 
-        bw.write( 1 + "," ); // First number optimized out as we know what it will be
-        for( int next_c, c = br.read(); c != -1; c = next_c )
+        for( int c = br.read(); c != -1; c = br.read() )
         {
-            final boolean last = ( ( next_c = br.read() ) == -1 );
-            debinarizer.debinarize( Character.getNumericValue( (char)c ), last );
+            debinarizer.debinarize( Character.getNumericValue( (char)c ) );
         }
 
         br.close();

@@ -20,7 +20,16 @@ public class Encoder
     {
         final BufferedReader br = new BufferedReader( new InputStreamReader( System.in, "UTF-8" ) );
         final BufferedWriter bw = new BufferedWriter( new OutputStreamWriter( System.out, "UTF-8" ) );
-        final int dict_limit = 1 << Integer.parseInt( args[ 0 ] ); // 2 ^ max_num_bits
+
+        // In the cases where max_bits_per_phrase = 2 or max_bits_per_phrase = 3:
+        //    1,a  1,a
+        //    2,a  2,a
+        //    3,a  3,a
+        // -> 0,a  4,a
+        // When we are going to debinarize the number where the arrow is pointing, we don't know whether
+        // we need to read in 2 or 3 bits. Hence if we set the dictionary limit to 2^n - 1 we can avoid
+        // that ambiguouity.
+        final int dict_limit = ( 1 << Integer.parseInt( args[ 0 ] ) ) - 1; // 2 ^ max_num_bits - 1
         Encoder encoder = new Encoder(); // Create encoder with empty dictionary
 
         for( int next_c, c = br.read(); c != -1; c = next_c )

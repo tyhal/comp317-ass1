@@ -50,9 +50,41 @@ public class Debinarizer
         bw = new BufferedWriter( new OutputStreamWriter( System.out, "UTF-8" ) );
         Debinarizer debinarizer = new Debinarizer();
 
-        for( int c = br.read(); c != -1; c = br.read() )
+        char[] window = new char[8];
+        char[] next_window = new char[8];
+
+        for( int next_c, c = br.read(window); c != -1; c = next_c )
         {
-            debinarizer.debinarize( Character.getNumericValue( (char)c ) );
+            final boolean last = ( ( next_c = br.read(next_window) ) == -1 );
+
+            if( !last )
+            {
+                // Debinarize every bit in 8-bit window
+                for (int i = 0; i < 8; i++)
+                {
+                    debinarizer.debinarize( Character.getNumericValue( window[i] ) );
+                }
+            } else
+            {
+                int i = 7;
+                // Padding will be 100... so iterate backwards until we hit 1
+                for( ; i >= 0; i--)
+                {
+                    if( Character.getNumericValue( window[i] ) == 1 ) {
+                        break;
+                    }
+                }
+                // Debinarize remaining bits inside 8 bit window that aren't padding
+                for(int j = 0; j < i; j++ )
+                {
+                    debinarizer.debinarize( Character.getNumericValue( window[j] ) );
+                }
+            }
+
+            // Swap references to windows such that we don't have to copy but we alternate instead.
+            char[] tmp_window = window;
+            window = next_window;
+            next_window = tmp_window;
         }
 
         br.close();

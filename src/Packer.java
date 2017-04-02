@@ -16,6 +16,11 @@ public class Packer {
         pck.pack();
     }
 
+    /**
+     * Bit packs a binary string.
+     * @param c  The binary string to pack.
+     * @return  The bit packed character
+     */
     private int packNsave(char[] c) {
         int dat = 0;
         for (int i = 0; i < 8; i++)
@@ -23,6 +28,10 @@ public class Packer {
         return dat;
     }
 
+    /**
+     * Packs the binary string into chars and writes them to stdout.
+     * @throws IOException
+     */
     private void pack() throws IOException {
         try {
             int i = 0, c;

@@ -9,21 +9,26 @@ public class Packer {
         bw = new BufferedWriter(out);
     }
 
-    private int packNsave(char[] c)
-    {
+    public static void main(String[] args) throws IOException {
+        Packer pck = new Packer(
+                new InputStreamReader(System.in, "UTF-8"),
+                new OutputStreamWriter(System.out, "UTF-8"));
+        pck.pack();
+    }
+
+    private int packNsave(char[] c) {
         int dat = 0;
-        for (int i = 0; i <8 ; i++)
-            dat += (c[i]&0x1)<<(7-i);
+        for (int i = 0; i < 8; i++)
+            dat += (c[i] & 0x1) << (7 - i);
         return dat;
     }
 
-    private void pack() throws IOException
-    {
+    private void pack() throws IOException {
         try {
             int i = 0, c;
             char[] cbuf = new char[8];
-            while ((c = br.read(cbuf,0,8)) != -1) {
-                assert (c == 8) ;
+            while ((c = br.read(cbuf, 0, 8)) != -1) {
+                assert (c == 8);
                 bw.write(packNsave(cbuf));
             }
         } catch (IOException e) {
@@ -32,12 +37,5 @@ public class Packer {
             br.close();
             bw.close();
         }
-    }
-
-    public static void main(String[] args) throws IOException {
-        Packer pck =  new Packer(
-                new InputStreamReader(System.in, "UTF-8"),
-                new OutputStreamWriter(System.out, "UTF-8"));
-        pck.pack();
     }
 }

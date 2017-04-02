@@ -32,6 +32,7 @@ public class Encoder
         final int dict_limit = ( 1 << Integer.parseInt( args[ 0 ] ) ) - 1; // 2 ^ max_num_bits - 1
         Encoder encoder = new Encoder(); // Create encoder with empty dictionary
 
+        // Read until end of file.
         for( int next_c, c = br.read(); c != -1; c = next_c )
         {
             final boolean last = ( ( next_c = br.read() ) == -1 );
